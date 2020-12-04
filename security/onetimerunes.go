@@ -8,7 +8,7 @@ type OneTimeRunes struct {
 }
 
 // Create a new OneTimeRunes with the specified characters
-func NewRunes(chars []rune) *OneTimeRunes {
+func NewOneTimeRunes(chars []rune) *OneTimeRunes {
 	return &OneTimeRunes{Chars: chars}
 }
 

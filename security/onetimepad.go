@@ -10,7 +10,7 @@ type OneTimePad struct{}
 const byteMax = 256
 
 // Create a new OneTimePad
-func New() *OneTimePad {
+func NewOneTimePad() *OneTimePad {
 	return &OneTimePad{}
 }
 

@@ -6,7 +6,7 @@ import (
 )
 
 func TestKeyGeneration(t *testing.T) {
-	otp := New()
+	otp := NewOneTimePad()
 	key := otp.GenerateKey(32)
 
 	if len(key) != 32 {
@@ -15,7 +15,7 @@ func TestKeyGeneration(t *testing.T) {
 }
 
 func TestMessageIntegrity(t *testing.T) {
-	otp := New()
+	otp := NewOneTimePad()
 
 	message := "Hello there! This is a secret message that must be sent secretly."
 	key := otp.GenerateKey(len(message))

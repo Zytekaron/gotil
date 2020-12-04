@@ -17,7 +17,7 @@ func TestRunesKeyGeneration(t *testing.T) {
 }
 
 func TestRunesMessageIntegrity(t *testing.T) {
-	otp := NewRunes(chars)
+	otp := NewOneTimeRunes(chars)
 
 	message := "Hello there! This is a secret message that must be sent secretly."
 	key := otp.GenerateKey(len(message))
