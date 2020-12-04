@@ -1,6 +1,9 @@
 package fn
 
-import "testing"
+import (
+	. "github.com/zytekaron/gotil/fn"
+	"testing"
+)
 
 func TestFuzzy(t *testing.T) {
 	TestFuzzyString(t)

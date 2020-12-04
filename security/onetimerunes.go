@@ -1,17 +1,20 @@
-package onetimepad
+package security
 
 import "github.com/zytekaron/gotil/random"
 
-type OneTimePad struct {
+type OneTimeRunes struct {
 	Chars []rune
 }
 
-func New(chars []rune) *OneTimePad {
-	return &OneTimePad{Chars: chars}
+// Create a new OneTimeRunes with the specified characters
+func NewRunes(chars []rune) *OneTimeRunes {
+	return &OneTimeRunes{Chars: chars}
 }
 
-func NewDefault() *OneTimePad {
-	return &OneTimePad{Chars: []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz;,.!? 0123456789")}
+// Create a new OneTimeRunes with the default characters
+// ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:;,.!? 0123456789
+func NewDefaultRunes() *OneTimeRunes {
+	return &OneTimeRunes{Chars: []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:;,.!? 0123456789")}
 }
 
 // Encode a message using a single-use key.
@@ -21,7 +24,7 @@ func NewDefault() *OneTimePad {
 // Security Tips:
 // Do not use the same key twice, ever!
 // Do not save the key once you have enciphered a message!
-func (o *OneTimePad) Encode(message, key []rune) []rune {
+func (o *OneTimeRunes) Encode(message, key []rune) []rune {
 	output := make([]rune, len(message))
 
 	for i := 0; i < len(message); i++ {
@@ -42,7 +45,7 @@ func (o *OneTimePad) Encode(message, key []rune) []rune {
 // Security Tips:
 // Do not use the same key twice, ever!
 // Do not save the key once you have enciphered a message!
-func (o *OneTimePad) EncodeString(message, key string) string {
+func (o *OneTimeRunes) EncodeString(message, key string) string {
 	return string(o.Encode([]rune(message), []rune(key)))
 }
 
@@ -52,7 +55,7 @@ func (o *OneTimePad) EncodeString(message, key string) string {
 // Security Tips:
 // Do not use the same key twice, ever!
 // Do not save the key once you have enciphered a message!
-func (o *OneTimePad) Decode(message, key []rune) []rune {
+func (o *OneTimeRunes) Decode(message, key []rune) []rune {
 	output := make([]rune, len(message))
 
 	for i := 0; i < len(message); i++ {
@@ -60,7 +63,7 @@ func (o *OneTimePad) Decode(message, key []rune) []rune {
 		keyIndex := index(o.Chars, key[i])
 
 		length := len(o.Chars)
-		out := (length + letterIndex - keyIndex) % length
+		out := (letterIndex - keyIndex + length) % length
 		output[i] = o.Chars[out]
 	}
 
@@ -73,7 +76,7 @@ func (o *OneTimePad) Decode(message, key []rune) []rune {
 // Security Tips:
 // Do not use the same key twice, ever!
 // Do not save the key once you have enciphered a message!
-func (o *OneTimePad) DecodeString(message, key string) string {
+func (o *OneTimeRunes) DecodeString(message, key string) string {
 	return string(o.Decode([]rune(message), []rune(key)))
 }
 
@@ -91,6 +94,6 @@ func index(charset []rune, char rune) int {
 // Security Tips:
 // Do not use the same key twice, ever!
 // Do not save the key once you have enciphered a message!
-func (o *OneTimePad) GenerateKey(length int) []rune {
+func (o *OneTimeRunes) GenerateKey(length int) []rune {
 	return random.MustSecureRunes(length, o.Chars)
 }

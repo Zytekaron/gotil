@@ -8,20 +8,44 @@ import (
 
 type EventEmitter struct {
 	listeners map[string]map[uint64]Listener
+	globals   map[uint64]Listener
 }
+
+type Listener struct {
+	id        uint64
+	event     string
+	predicate interface{}
+	handler   interface{}
+}
+
+// Another way to specify "all events"
+const (
+	All = "*"
+)
 
 // Create a new EventEmitter
 func New() *EventEmitter {
 	return &EventEmitter{
 		listeners: make(map[string]map[uint64]Listener),
+		globals:   make(map[uint64]Listener),
 	}
 }
 
-// Create an event handler and get a canceller function
+// Create an event handler.
 //
-// Please note that the return value of this method
-// is subject to change in the near future (to Listener)
+// Panics when the event or handler is omitted.
+//
+// Provide a func(?) bool before the handler to include a predicate.
+//
+// Cancel the event by calling the returned function.
+//
+// Use "*" to capture all events. Catch-all handlers must accept
+// ...interface{} OR match the parameters of all other handlers.
+// When Emit is called, if the arguments do not match, it will panic.
 func (e *EventEmitter) On(event string, functions ...interface{}) func() {
+	if event == "" {
+		panic("no event name specified")
+	}
 	if len(functions) == 0 {
 		panic("no handler provided")
 	}
@@ -42,28 +66,35 @@ func (e *EventEmitter) On(event string, functions ...interface{}) func() {
 		predicate: predicate,
 		handler:   handler,
 	}
+
+	if event == "*" {
+		e.globals[listener.id] = listener
+		return func() {
+			delete(e.globals, listener.id)
+		}
+	}
+
 	if _, ok := e.listeners[event]; !ok {
 		e.listeners[event] = make(map[uint64]Listener, 0)
 	}
 
 	e.listeners[event][listener.id] = listener
 	return func() {
-		delete(e.listeners[event], listener.id) // remove the listener
+		delete(e.listeners[event], listener.id)
 
-		if len(e.listeners[event]) == 0 { // if there are no more listeners
-			delete(e.listeners, event) // remove the map of listeners
+		// if there are no more listeners, remove the map
+		if len(e.listeners[event]) == 0 {
+			delete(e.listeners, event)
 		}
 	}
 }
 
-// Emit an event
-func (e *EventEmitter) Emit(event string, args ...interface{}) <-chan interface{} {
-	listeners, ok := e.listeners[event]
-	if !ok {
-		return nil
-	}
-
-	ch := make(chan interface{})
+// Emit an event.
+//
+// All non-nil return values will be sent to the
+// returned channel, then it will be closed.
+func (e *EventEmitter) Emit(event string, args ...interface{}) <-chan []interface{} {
+	ch := make(chan []interface{})
 
 	callArgs := make([]reflect.Value, len(args))
 	for i, a := range args {
@@ -71,27 +102,18 @@ func (e *EventEmitter) Emit(event string, args ...interface{}) <-chan interface{
 	}
 
 	var wg sync.WaitGroup
-	for _, listener := range listeners {
+
+	listeners, ok := e.listeners[event]
+	if ok {
+		for _, listener := range listeners {
+			wg.Add(1)
+			go callM(&wg, &listener, callArgs, ch)
+		}
+	}
+
+	for _, listener := range e.globals {
 		wg.Add(1)
-
-		go func(listener Listener) {
-			if listener.predicate != nil {
-				predicate := reflect.ValueOf(listener.predicate)
-				result := predicate.Call(callArgs)
-				if !result[0].Interface().(bool) {
-					wg.Done()
-					return
-				}
-			}
-
-			handler := reflect.ValueOf(listener.handler)
-			res := make([]interface{}, 0)
-			for _, value := range handler.Call(callArgs) {
-				res = append(res, value.Interface())
-			}
-			ch <- res
-			wg.Done()
-		}(listener)
+		go callM(&wg, &listener, callArgs, ch)
 	}
 
 	go func() {
@@ -100,4 +122,29 @@ func (e *EventEmitter) Emit(event string, args ...interface{}) <-chan interface{
 	}()
 
 	return ch
+}
+
+func call(function interface{}, args []reflect.Value) []reflect.Value {
+	handler := reflect.ValueOf(function)
+	return handler.Call(args)
+}
+
+func callM(wg *sync.WaitGroup, listener *Listener, args []reflect.Value, ch chan<- []interface{}) {
+	if listener.predicate != nil {
+		res := call(listener.predicate, args)
+		if !res[0].Interface().(bool) {
+			return
+		}
+	}
+
+	values := call(listener.handler, args)
+
+	res := make([]interface{}, 0)
+	for _, value := range values {
+		res = append(res, value.Interface())
+	}
+	if res != nil {
+		ch <- res
+	}
+	wg.Done()
 }

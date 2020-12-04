@@ -1,6 +1,9 @@
 package random
 
-import "testing"
+import (
+	. "github.com/zytekaron/gotil/random"
+	"testing"
+)
 
 func TestSecureRunes(t *testing.T) {
 	runes, err := SecureRunes(32, []rune("0123456789abcdef"))

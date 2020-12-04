@@ -1,6 +1,7 @@
 package maths
 
 import (
+	. "github.com/zytekaron/gotil/maths"
 	"math"
 	"math/rand"
 	"testing"

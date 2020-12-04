@@ -1,6 +1,7 @@
 package random
 
 import (
+	. "github.com/zytekaron/gotil/random"
 	"testing"
 )
 
@@ -11,7 +12,7 @@ func TestNewRandomizer(t *testing.T) {
 		t.Error("error occurred whilst adding 1 to randomizer:", err.Error())
 	}
 
-	err = rand.AddElement(&RandomizerElement{20, 1})
+	err = rand.AddElement(&RandomizerElement{Weight: 20, Result: 1})
 	if err != nil {
 		t.Error("error occurred whilst adding 2 to randomizer:", err.Error())
 	}
@@ -41,7 +42,7 @@ func TestNewSecureRandomizer(t *testing.T) {
 		t.Error("error occurred whilst adding 1 to randomizer:", err.Error())
 	}
 
-	err = rand.AddElement(&RandomizerElement{20, 1})
+	err = rand.AddElement(&RandomizerElement{Weight: 20, Result: 1})
 	if err != nil {
 		t.Error("error occurred whilst adding 2 to randomizer:", err.Error())
 	}
