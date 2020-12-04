@@ -39,7 +39,7 @@ func AverageInt(nums []int) float64 {
 			y += b
 		}
 	}
-	return float64(x) + float64(y) / float64(length)
+	return float64(x) + float64(y)/float64(length)
 }
 
 // Calculate the average value of all the elements in a slice
@@ -59,5 +59,5 @@ func AverageFloat64(nums []float64) float64 {
 			y += b
 		}
 	}
-	return float64(x) + y / length
+	return float64(x) + y/length
 }

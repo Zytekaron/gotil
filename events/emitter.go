@@ -107,13 +107,13 @@ func (e *EventEmitter) Emit(event string, args ...interface{}) <-chan []interfac
 	if ok {
 		for _, listener := range listeners {
 			wg.Add(1)
-			go callM(&wg, &listener, callArgs, ch)
+			go callHandler(&wg, &listener, callArgs, ch)
 		}
 	}
 
 	for _, listener := range e.globals {
 		wg.Add(1)
-		go callM(&wg, &listener, callArgs, ch)
+		go callHandler(&wg, &listener, callArgs, ch)
 	}
 
 	go func() {
@@ -129,7 +129,7 @@ func call(function interface{}, args []reflect.Value) []reflect.Value {
 	return handler.Call(args)
 }
 
-func callM(wg *sync.WaitGroup, listener *Listener, args []reflect.Value, ch chan<- []interface{}) {
+func callHandler(wg *sync.WaitGroup, listener *Listener, args []reflect.Value, ch chan<- []interface{}) {
 	if listener.predicate != nil {
 		res := call(listener.predicate, args)
 		if !res[0].Interface().(bool) {

@@ -2,6 +2,7 @@ package security
 
 import "github.com/zytekaron/gotil/random"
 
+// A One Time Pad implementation in Go with custom alphabet support
 type OneTimeRunes struct {
 	Chars []rune
 }
@@ -12,9 +13,9 @@ func NewRunes(chars []rune) *OneTimeRunes {
 }
 
 // Create a new OneTimeRunes with the default characters
-// ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:;,.!? 0123456789
+// ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:;,.!?
 func NewDefaultRunes() *OneTimeRunes {
-	return &OneTimeRunes{Chars: []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:;,.!? 0123456789")}
+	return &OneTimeRunes{Chars: []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:;,.!? ")}
 }
 
 // Encode a message using a single-use key.

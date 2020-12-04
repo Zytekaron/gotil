@@ -10,7 +10,7 @@ func Collisions(size int, probability float64) float64 {
 	if probability > 1 {
 		probability /= 100
 	}
-	return math.Sqrt(2.0 * float64(size) * math.Log(1 / (1 - probability)))
+	return math.Sqrt(2.0 * float64(size) * math.Log(1/(1-probability)))
 }
 
 // Calculate the factorial of a given number
@@ -24,5 +24,5 @@ func Factorial(n uint64) uint64 {
 
 // Calculate the nth root of a number
 func Root(num, root float64) float64 {
-	return math.Pow(num, 1 / root)
+	return math.Pow(num, 1/root)
 }

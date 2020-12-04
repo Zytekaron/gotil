@@ -2,6 +2,7 @@ package random
 
 import (
 	"errors"
+	"github.com/zytekaron/gotil/maths"
 	"math/rand"
 	"time"
 )
@@ -124,7 +125,7 @@ func (r *Randomizer) sample() interface{} {
 }
 
 func aliasMethod(probabilities []float64, rng *rand.Rand) func() int {
-	sum := float64sum(probabilities)
+	sum := maths.SumFloat64(probabilities)
 
 	probMultiplier := float64(len(probabilities)) / sum
 	for i := range probabilities {
@@ -182,12 +183,4 @@ func aliasMethod(probabilities []float64, rng *rand.Rand) func() int {
 			return aliases[index]
 		}
 	}
-}
-
-func float64sum(slice []float64) float64 {
-	total := 0.0
-	for _, e := range slice {
-		total += e
-	}
-	return total
 }

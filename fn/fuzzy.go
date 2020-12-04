@@ -5,11 +5,6 @@ package fn
 // If a the needle can be found one character at a time (sequentially)
 // in the haystack, even if they haystack has extra characters
 // omitted in the needle, this function returns true.
-//
-// fuzzy("NASA", "National Aeronautics and Space Administration")
-// // -> true (N, A, S, and A are found sequentially in the string)
-// fuzzy("135", "12345") // true (2 and 4 are omitted, this is ok)
-// fuzzy("531", "12345") // false (wrong order)
 func Fuzzy(needle, haystack []rune) bool {
 	nl := len(needle)
 	hl := len(haystack)

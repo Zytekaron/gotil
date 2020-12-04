@@ -4,6 +4,7 @@ import (
 	"github.com/zytekaron/gotil/random"
 )
 
+// A One Time Pad implementation in Go
 type OneTimePad struct{}
 
 const byteMax = 256
