@@ -22,10 +22,10 @@ func (s *cryptoRand) Int63() int64 {
 	return int64(s.Uint64() & ^uint64(1<<63))
 }
 
-func (s *cryptoRand) Uint64() (uint uint64) {
-	err := binary.Read(cr.Reader, binary.BigEndian, &uint)
+func (s *cryptoRand) Uint64() (i uint64) {
+	err := binary.Read(cr.Reader, binary.BigEndian, &i)
 	if err != nil {
 		panic(err)
 	}
-	return uint
+	return i
 }
