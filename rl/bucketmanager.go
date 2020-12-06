@@ -104,10 +104,6 @@ func LoadFile(file string) (*BucketManager, error) {
 	return &bm, err
 }
 
-func (bm *BucketManager) ensureReset(id string) {
-	bm.getOrCreate(id).ensureReset()
-}
-
 func (bm *BucketManager) getOrCreate(id string) *Bucket {
 	if _, err := bm.Buckets[id]; !err {
 		bm.Buckets[id] = NewBucket(bm.Limit, bm.ResetAfter)

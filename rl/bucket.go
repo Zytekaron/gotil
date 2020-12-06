@@ -87,10 +87,10 @@ func (b *Bucket) ensureReset() {
 	}
 }
 
-func max(a float64, b float64) int {
+func max(a, b float64) int {
 	return int(math.Max(a, b))
 }
 
-func min(a float64, b float64) int {
+func min(a, b float64) int {
 	return int(math.Min(a, b))
 }
