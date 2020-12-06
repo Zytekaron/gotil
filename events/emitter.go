@@ -75,7 +75,7 @@ func (e *EventEmitter) On(event string, functions ...interface{}) func() {
 	}
 
 	if _, ok := e.listeners[event]; !ok {
-		e.listeners[event] = make(map[uint64]Listener, 0)
+		e.listeners[event] = make(map[uint64]Listener)
 	}
 
 	e.listeners[event][listener.id] = listener
