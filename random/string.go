@@ -1,9 +1,9 @@
 package random
 
 import (
+	"crypto/rand"
 	"encoding/binary"
 	"math"
-	"math/rand"
 )
 
 // Generate a random rune slice of a given length and character set
