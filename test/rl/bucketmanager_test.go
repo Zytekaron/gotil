@@ -9,6 +9,8 @@ import (
 
 var path = "C:\\Users\\Zytekaron\\AppData\\Local\\Temp\\rl.dat"
 
+// todo test Load Save
+
 func TestBucketManager(t *testing.T) {
 	bm := New(5, 10*time.Minute)
 

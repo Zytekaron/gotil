@@ -13,7 +13,7 @@ func TestSecureRunes(t *testing.T) {
 	}
 
 	if len(runes) != 32 {
-		t.Error("Expected []rune length of 32, got", len(runes))
+		t.Error("Expected []rune of length 32, got", len(runes))
 	}
 }
 
@@ -25,6 +25,14 @@ func TestSecureString(t *testing.T) {
 	}
 
 	if len(str) != 32 {
-		t.Error("Expected []rune length of 32, got", len(str))
+		t.Error("Expected []rune of length 32, got", len(str))
 	}
+}
+
+func TestMustSecureRunes(t *testing.T) {
+	MustSecureRunes(32, []rune("0123456789abcdef"))
+}
+
+func TestMustSecureString(t *testing.T) {
+	MustSecureString(32, []rune("0123456789abcdef"))
 }
