@@ -1,3 +1,3 @@
-module github.com/zytekaron/gotil
+module github.com/Zytekaron/gotil
 
 go 1.15
