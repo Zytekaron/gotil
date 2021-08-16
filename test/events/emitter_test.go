@@ -24,11 +24,12 @@ func TestResponses(t *testing.T) {
 
 	emitter.On("*", func() string { return "catch-all" })
 
-	var cancel func()
-	cancel = emitter.On("c", func() string { return "c (cancelled)" })
-	cancel()
-	cancel = emitter.On(All, func() string { return "catch-all (cancelled)" })
-	cancel()
+	// cancel func is called
+	emitter.On("c", func() string { return "c (cancelled)" })()
+	emitter.On(All, func() string { return "catch-all (cancelled)" })()
+
+	emitter.OnConditional(All, func() bool { return true }, func() string { return "catch-all-predicate" })
+	emitter.OnConditional(All, func() bool { return false }, func() string { return "catch-all-predicate (disabled)" })
 
 	// calls a (a1), a (a2), and * (catch-all)
 	ch := emitter.Emit("a")
@@ -36,7 +37,7 @@ func TestResponses(t *testing.T) {
 	for val := range ch {
 		values = append(values, val[0])
 	}
-	if len(values) != 3 {
+	if len(values) != 4 {
 		t.Error("Expected 3 values, got", len(values), values)
 	}
 
@@ -47,7 +48,7 @@ func TestResponses(t *testing.T) {
 	for val := range ch {
 		values = append(values, val)
 	}
-	if len(values) != 1 {
+	if len(values) != 2 {
 		t.Error("Expected 1 values, got", len(values), values)
 	}
 

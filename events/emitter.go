@@ -1,14 +1,17 @@
 package events
 
 import (
-	"github.com/zytekaron/gotil/random"
 	"reflect"
 	"sync"
+	"sync/atomic"
 )
 
 type EventEmitter struct {
-	listeners map[string]map[uint64]Listener
-	globals   map[uint64]Listener
+	listeners     map[string]map[uint64]*Listener
+	globals       map[uint64]*Listener
+
+	listenerMutex sync.Mutex
+	globalMutex   sync.Mutex
 }
 
 type Listener struct {
@@ -18,68 +21,75 @@ type Listener struct {
 	handler   interface{}
 }
 
-// Another way to specify "all events"
-const (
-	All = "*"
-)
+// All is a way to specify "all events"
+const All = "*"
 
-// Create a new EventEmitter
+var idCounter uint64
+
+// New creates a new EventEmitter
 func New() *EventEmitter {
 	return &EventEmitter{
-		listeners: make(map[string]map[uint64]Listener),
-		globals:   make(map[uint64]Listener),
+		listeners: make(map[string]map[uint64]*Listener),
+		globals:   make(map[uint64]*Listener),
 	}
 }
 
-// Create an event handler.
+// On creates an event handler and returns
+// a function that can be called to delete it
 //
 // Panics when the event or handler is omitted.
 //
-// Provide a func(?) bool before the handler to include a predicate.
-//
-// Cancel the event by calling the returned function.
-//
-// Use "*" to capture all events. Catch-all handlers must accept
+// Use All to capture all events. Catch-all handlers must accept
 // ...interface{} OR match the parameters of all other handlers.
 // When Emit is called, if the arguments do not match, it will panic.
-func (e *EventEmitter) On(event string, functions ...interface{}) func() {
+func (e *EventEmitter) On(event string, handler interface{}) func() {
+	return e.on(event, nil, handler)
+}
+
+// OnConditional is equivalent to On, but with a predicate
+func (e *EventEmitter) OnConditional(event string, predicate interface{}, handler interface{}) func() {
+	return e.on(event, predicate, handler)
+}
+
+func (e *EventEmitter) on(event string, predicate interface{}, handler interface{}) func() {
 	if event == "" {
-		panic("no event name specified")
+		panic("event name is empty")
 	}
-	if len(functions) == 0 {
-		panic("no handler provided")
-	}
-
-	var predicate, handler interface{}
-	if len(functions) == 1 {
-		predicate = nil
-		handler = functions[0]
-	}
-	if len(functions) == 2 {
-		predicate = functions[0]
-		handler = functions[1]
+	if handler == nil {
+		panic("handler func is nil")
 	}
 
-	listener := Listener{
-		id:        random.Uint64(),
+	listener := &Listener{
+		id:        atomic.AddUint64(&idCounter, 1),
 		event:     event,
 		predicate: predicate,
 		handler:   handler,
 	}
 
-	if event == "*" {
+	if event == All {
+		e.globalMutex.Lock()
 		e.globals[listener.id] = listener
+		e.globalMutex.Unlock()
 		return func() {
+			e.globalMutex.Lock()
 			delete(e.globals, listener.id)
+			e.globalMutex.Unlock()
 		}
 	}
 
-	if _, ok := e.listeners[event]; !ok {
-		e.listeners[event] = make(map[uint64]Listener)
-	}
+	// the rest of the f1 uses the listener map
+	e.listenerMutex.Lock()
+	defer e.listenerMutex.Unlock()
 
+	if _, ok := e.listeners[event]; !ok {
+		e.listeners[event] = make(map[uint64]*Listener)
+	}
 	e.listeners[event][listener.id] = listener
+
 	return func() {
+		e.listenerMutex.Lock()
+		defer e.listenerMutex.Unlock()
+
 		delete(e.listeners[event], listener.id)
 
 		// if there are no more listeners, remove the map
@@ -103,18 +113,28 @@ func (e *EventEmitter) Emit(event string, args ...interface{}) <-chan []interfac
 
 	var wg sync.WaitGroup
 
+	e.listenerMutex.Lock()
 	listeners, ok := e.listeners[event]
 	if ok {
 		for _, listener := range listeners {
 			wg.Add(1)
-			go callHandler(&wg, &listener, callArgs, ch)
+			go func(l *Listener) {
+				callHandler(l, callArgs, ch)
+				wg.Done()
+			}(listener)
 		}
 	}
+	e.listenerMutex.Unlock()
 
+	e.globalMutex.Lock()
 	for _, listener := range e.globals {
 		wg.Add(1)
-		go callHandler(&wg, &listener, callArgs, ch)
+		go func(l *Listener) {
+			callHandler(l, callArgs, ch)
+			wg.Done()
+		}(listener)
 	}
+	e.globalMutex.Unlock()
 
 	go func() {
 		wg.Wait()
@@ -129,7 +149,7 @@ func call(function interface{}, args []reflect.Value) []reflect.Value {
 	return handler.Call(args)
 }
 
-func callHandler(wg *sync.WaitGroup, listener *Listener, args []reflect.Value, ch chan<- []interface{}) {
+func callHandler(listener *Listener, args []reflect.Value, ch chan<- []interface{}) {
 	if listener.predicate != nil {
 		res := call(listener.predicate, args)
 		if !res[0].Interface().(bool) {
@@ -146,5 +166,4 @@ func callHandler(wg *sync.WaitGroup, listener *Listener, args []reflect.Value, c
 	if res != nil {
 		ch <- res
 	}
-	wg.Done()
 }
