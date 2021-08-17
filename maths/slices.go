@@ -4,7 +4,7 @@ import (
 	"math"
 )
 
-// Calculate the sum of the elements in a slice
+// SumInt calculates the sum of the elements in a slice
 func SumInt(nums []int) int {
 	sum := 0
 	for _, e := range nums {
@@ -13,7 +13,7 @@ func SumInt(nums []int) int {
 	return sum
 }
 
-// Calculate the sum of the elements in a slice
+// SumFloat64 calculates the sum of the elements in a slice
 func SumFloat64(nums []float64) float64 {
 	sum := 0.0
 	for _, e := range nums {
@@ -22,9 +22,9 @@ func SumFloat64(nums []float64) float64 {
 	return sum
 }
 
-// Calculate the average value of all the elements in a slice
-// This uses rolling averages to prevent
-// many issues related to integer overflow
+// AverageInt calculates the average value of all the elements in a slice
+//
+// This uses rolling averages to prevent issues related to integer overflow
 func AverageInt(nums []int) float64 {
 	x := 0
 	y := 0
@@ -42,9 +42,9 @@ func AverageInt(nums []int) float64 {
 	return float64(x) + float64(y)/float64(length)
 }
 
-// Calculate the average value of all the elements in a slice
-// This uses rolling averages to prevent
-// many issues related to number overflow
+// AverageFloat64 calculates the average value of all the elements in a slice
+//
+// This uses rolling averages to prevent issues related to number overflow
 func AverageFloat64(nums []float64) float64 {
 	x := 0
 	y := 0.0
