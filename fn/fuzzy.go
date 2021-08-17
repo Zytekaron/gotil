@@ -1,11 +1,11 @@
 package fn
 
-// Test if a given haystack contains a given needle.
+// Fuzzy tests if a given haystack contains a given needle.
 //
 // If a the needle can be found one character at a time (sequentially)
 // in the haystack, even if they haystack has extra characters
 // omitted in the needle, this function returns true.
-func Fuzzy(needle, haystack []rune) bool {
+func Fuzzy(needle, haystack string) bool {
 	nl := len(needle)
 	hl := len(haystack)
 
@@ -14,36 +14,22 @@ func Fuzzy(needle, haystack []rune) bool {
 	}
 
 	if nl == hl {
-		return eq(needle, haystack)
+		return needle == haystack
 	}
 
+	needleRunes := []rune(needle)
+	haystackRunes := []rune(haystack)
 outer:
 	for i, j := 0, 0; i < nl; i++ {
-		nch := needle[i]
+		nch := needleRunes[i]
 		for j < hl {
-			if haystack[j] == nch {
+			if haystackRunes[j] == nch {
 				j++
 				continue outer
 			}
 			j++
 		}
 		return false
-	}
-	return true
-}
-
-func FuzzyString(needle, haystack string) bool {
-	return Fuzzy([]rune(needle), []rune(haystack))
-}
-
-func eq(a, b []rune) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i, e := range a {
-		if e != b[i] {
-			return false
-		}
 	}
 	return true
 }

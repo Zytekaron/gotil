@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// Read a Go Object from io.Reader
+// ReadGob reads a Go Object from io.Reader
 // Unexported properties on structs will be lost
 func ReadGob(r io.Reader, i interface{}) error {
 	decoder := gob.NewDecoder(r)
@@ -14,7 +14,7 @@ func ReadGob(r io.Reader, i interface{}) error {
 	return err
 }
 
-// Read a Go Object from a file
+// ReadGobFile reads a Go Object from a file
 // Unexported properties on structs will be lost
 func ReadGobFile(path string, i interface{}) error {
 	file, err := os.Open(path)
@@ -26,7 +26,7 @@ func ReadGobFile(path string, i interface{}) error {
 	return ReadGob(file, i)
 }
 
-// Write a Go Object to io.Writer
+// WriteGob writes a Go Object to io.Writer
 // Unexported properties on structs will be lost
 func WriteGob(w io.Writer, obj interface{}) error {
 	encoder := gob.NewEncoder(w)
@@ -34,7 +34,7 @@ func WriteGob(w io.Writer, obj interface{}) error {
 	return err
 }
 
-// Write a Go Object to a file
+// WriteGobFile writes a Go Object to a file
 // Unexported properties on structs will be lost
 func WriteGobFile(path string, obj interface{}) error {
 	file, err := os.Create(path)
