@@ -9,7 +9,7 @@ import (
 
 var defaultRand = rand.NewSource(time.Now().UnixNano())
 
-// A randomizer implementation using the alias method
+// Randomizer is an implementation of the alias method
 type Randomizer struct {
 	secure    bool
 	weights   []float64
@@ -18,12 +18,13 @@ type Randomizer struct {
 	ready     bool
 }
 
+// RandomizerElement is an element of a Randomizer
 type RandomizerElement struct {
 	Weight float64
 	Result interface{}
 }
 
-// Create a Randomizer instance
+// NewRandomizer creates a Randomizer instance
 func NewRandomizer() *Randomizer {
 	return &Randomizer{
 		secure:  false,
@@ -32,9 +33,9 @@ func NewRandomizer() *Randomizer {
 	}
 }
 
-// Create a Randomizer instance that uses
-// a cryptographically secure source for
-// random number and sample generation
+// NewSecureRandomizer creates a Randomizer
+// instance that uses a cryptographically secure
+// source for random number and sample generation
 func NewSecureRandomizer() *Randomizer {
 	return &Randomizer{
 		secure:  true,
@@ -43,7 +44,7 @@ func NewSecureRandomizer() *Randomizer {
 	}
 }
 
-// Add elements to the Randomizer
+// Add adds elements to the Randomizer
 func (r *Randomizer) Add(weight float64, result interface{}) error {
 	if r.ready {
 		return errors.New("randomizer has already been prepared and is now immutable")
@@ -53,12 +54,12 @@ func (r *Randomizer) Add(weight float64, result interface{}) error {
 	return nil
 }
 
-// Add elements to the Randomizer
+// AddElement adds elements to the Randomizer
 func (r *Randomizer) AddElement(element *RandomizerElement) error {
 	return r.Add(element.Weight, element.Result)
 }
 
-// Add elements to the Randomizer from an array of arrays
+// AddMany adds multiple elements to the Randomizer from an array of elements
 func (r *Randomizer) AddMany(elements []RandomizerElement) error {
 	if r.ready {
 		return errors.New("randomizer has already been prepared and is now immutable")
@@ -82,7 +83,8 @@ func (r *Randomizer) Prepare() {
 	r.ready = true
 }
 
-// Sample the alias method to get a random value respecting the weights of each element
+// Sample the alias method to get a random
+// value, respecting the weights of each element
 func (r *Randomizer) Sample() (interface{}, error) {
 	if !r.ready {
 		return nil, errors.New("randomizer 'prepare' method must be called before sampling may begin")
@@ -90,7 +92,8 @@ func (r *Randomizer) Sample() (interface{}, error) {
 	return r.sample(), nil
 }
 
-// Sample the alias method to get a random value respecting the weights of each element
+// MustSample samples the alias method to get a random
+// value, respecting the weights of each element
 func (r *Randomizer) MustSample() interface{} {
 	res, err := r.Sample()
 	if err != nil {
@@ -99,7 +102,8 @@ func (r *Randomizer) MustSample() interface{} {
 	return res
 }
 
-// Sample the alias method to get random values respecting the weights of each element
+// SampleMany samples the alias method to get random
+// values, respecting the weights of each element
 func (r *Randomizer) SampleMany(count int) ([]interface{}, error) {
 	if !r.ready {
 		return nil, errors.New("randomizer 'prepare' method must be called before sampling may begin")
@@ -111,7 +115,8 @@ func (r *Randomizer) SampleMany(count int) ([]interface{}, error) {
 	return results, nil
 }
 
-// Sample the alias method to get random values respecting the weights of each element
+// MustSampleMany samples the alias method to get random
+// values, respecting the weights of each element
 func (r *Randomizer) MustSampleMany(count int) []interface{} {
 	res, err := r.SampleMany(count)
 	if err != nil {

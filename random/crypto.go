@@ -1,19 +1,16 @@
 package random
 
 import (
-	cr "crypto/rand"
+	crand "crypto/rand"
 	"encoding/binary"
 	"math/rand"
 )
 
 type cryptoRand struct{}
 
-var (
-	cryptoSource = cryptoRand{}
-	SecureRng    = rand.New(&cryptoSource)
-)
+var SecureRng = rand.New(&cryptoRand{})
 
-// Cannot seed crypto random source: Panics when called
+// Seed panics when called
 func (s *cryptoRand) Seed(int64) {
 	panic("cannot seed crypto random source")
 }
@@ -23,7 +20,7 @@ func (s *cryptoRand) Int63() int64 {
 }
 
 func (s *cryptoRand) Uint64() (i uint64) {
-	err := binary.Read(cr.Reader, binary.BigEndian, &i)
+	err := binary.Read(crand.Reader, binary.BigEndian, &i)
 	if err != nil {
 		panic(err)
 	}

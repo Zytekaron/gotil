@@ -6,7 +6,7 @@ import (
 	"math"
 )
 
-// Generate a random rune slice of a given length and character set
+// SecureRunes generates a random rune slice of a given length and character set
 func SecureRunes(length int, chars []rune) ([]rune, error) {
 	// maximum valid value for modular division
 	// to maintain a perfectly even distribution
@@ -45,8 +45,8 @@ func SecureRunes(length int, chars []rune) ([]rune, error) {
 	return result, nil
 }
 
-// Generate a random rune slice a given length and character set
-// and ignore errors caused by the random source
+// MustSecureRunes generates a random rune slice a given length
+// and character set and ignore errors caused by the random source
 func MustSecureRunes(length int, chars []rune) []rune {
 	res, err := SecureRunes(length, chars)
 	if err != nil {
@@ -55,7 +55,7 @@ func MustSecureRunes(length int, chars []rune) []rune {
 	return res
 }
 
-// Generate a random string of a given length and character set
+// SecureString generates a random string of a given length and character set
 func SecureString(length int, chars []rune) (string, error) {
 	res, err := SecureRunes(length, chars)
 	if err != nil {
@@ -64,8 +64,8 @@ func SecureString(length int, chars []rune) (string, error) {
 	return string(res), nil
 }
 
-// Generate a random string of a given length and character set
-// and ignore errors caused by the random source
+// MustSecureString generates a random string of a given length
+// and character set and ignore errors caused by the random source
 func MustSecureString(length int, chars []rune) string {
 	str, err := SecureString(length, chars)
 	if err != nil {
