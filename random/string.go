@@ -1,7 +1,7 @@
 package random
 
 import (
-	"crypto/rand"
+	crand "crypto/rand"
 	"encoding/binary"
 	"math"
 )
@@ -10,17 +10,18 @@ import (
 func SecureRunes(length int, chars []rune) ([]rune, error) {
 	// maximum valid value for modular division
 	// to maintain a perfectly even distribution
-	maxValid := (int(math.Pow(2, 16))/len(chars))*len(chars) - 1
-	// the amount of entropy to generate for each pass
-	entropyLength := int(math.Ceil(float64(length)*1.1) * 2)
+	maxValid := (math.MaxUint16/len(chars))*len(chars) - 1
 
 	// the resulting runes
 	result := make([]rune, 0)
 	// until the string is full
 	for len(result) < length {
+		// the amount of entropy to generate for each pass
+		entropyLength := int(math.Ceil(float64(length-len(result))*1.1) * 2)
+
 		// generate entropy
 		entropy := make([]byte, entropyLength)
-		_, err := rand.Read(entropy)
+		_, err := crand.Read(entropy)
 		if err != nil {
 			return nil, err
 		}
@@ -29,8 +30,7 @@ func SecureRunes(length int, chars []rune) ([]rune, error) {
 		i := 0
 		for i < entropyLength && len(result) < length {
 			// read 2 bytes
-			var bytes []byte
-			bytes, entropy = entropy[:2], entropy[2:]
+			bytes := entropy[i : i+2]
 			value := int(binary.BigEndian.Uint16(bytes))
 			i += 2
 			// ignore values that would create an uneven distribution
