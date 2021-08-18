@@ -6,5 +6,5 @@ test_patterns = ["test/**"]
 name = "go"
 enabled = true
 
-  [analyzers.meta]
-  import_paths = ["github.com/Zytekaron/gotil"]
+[analyzers.meta]
+import_paths = ["github.com/Zytekaron/gotil"]
