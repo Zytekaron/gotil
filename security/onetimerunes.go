@@ -2,29 +2,34 @@ package security
 
 import "github.com/zytekaron/gotil/random"
 
-// A One Time Pad implementation in Go with custom alphabet support
+// OneTimeRunes is an implementation of the
+// One-Time Pad information security algorithm
+// that uses a custom alphabet instead of bytes
+//
+// Important security considerations: A key should
+// never be used more than once, and it should be
+// securely disposed of once it has been used.
 type OneTimeRunes struct {
 	Chars []rune
 }
 
-// Create a new OneTimeRunes with the specified characters
+// NewOneTimeRunes creates a new OneTimeRunes with the specified characters
 func NewOneTimeRunes(chars []rune) *OneTimeRunes {
-	return &OneTimeRunes{Chars: chars}
+	return &OneTimeRunes{
+		Chars: chars,
+	}
 }
 
-// Create a new OneTimeRunes with the default characters
+// NewDefaultRunes creates a new OneTimeRunes with the default characters
+//
 // ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:;,.!?
 func NewDefaultRunes() *OneTimeRunes {
 	return &OneTimeRunes{Chars: []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:;,.!? ")}
 }
 
-// Encode a message using a single-use key.
-// If a key is not provided, one will be generated and returned.
-// You may append to the message and it will not affect the result.
+// Encode encodes a message using a single-use key.
 //
-// Security Tips:
-// Do not use the same key twice, ever!
-// Do not save the key once you have enciphered a message!
+// The length of the key must be greater than or equal to the length of the message
 func (o *OneTimeRunes) Encode(message, key []rune) []rune {
 	output := make([]rune, len(message))
 
@@ -39,23 +44,14 @@ func (o *OneTimeRunes) Encode(message, key []rune) []rune {
 	return output
 }
 
-// Encode a message using a single-use key.
-// If a key is not provided, one will be generated and returned.
-// You may append to the message and it will not affect the result./
-//
-// Security Tips:
-// Do not use the same key twice, ever!
-// Do not save the key once you have enciphered a message!
+// EncodeString calls Encode with the message and key characters
 func (o *OneTimeRunes) EncodeString(message, key string) string {
 	return string(o.Encode([]rune(message), []rune(key)))
 }
 
-// Decode a message using a single-use key.
-// The message may be longer than the key.
+// Decode decodes a message using a single-use key.
 //
-// Security Tips:
-// Do not use the same key twice, ever!
-// Do not save the key once you have enciphered a message!
+// The length of the key must be greater than or equal to the length of the message
 func (o *OneTimeRunes) Decode(message, key []rune) []rune {
 	output := make([]rune, len(message))
 
@@ -71,12 +67,7 @@ func (o *OneTimeRunes) Decode(message, key []rune) []rune {
 	return output
 }
 
-// Decode a message using a single-use key.
-// The message may be longer than the key.
-//
-// Security Tips:
-// Do not use the same key twice, ever!
-// Do not save the key once you have enciphered a message!
+// DecodeString calls Decode with the message and key characters
 func (o *OneTimeRunes) DecodeString(message, key string) string {
 	return string(o.Decode([]rune(message), []rune(key)))
 }
@@ -90,11 +81,7 @@ func index(charset []rune, char rune) int {
 	return -1
 }
 
-// Generate a key with a given length
-//
-// Security Tips:
-// Do not use the same key twice, ever!
-// Do not save the key once you have enciphered a message!
+// GenerateKey generates a key with a given length
 func (o *OneTimeRunes) GenerateKey(length int) []rune {
 	return random.MustSecureRunes(length, o.Chars)
 }
