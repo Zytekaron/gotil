@@ -47,11 +47,11 @@ func (e *EventEmitter) On(event string, handler interface{}) func() {
 }
 
 // OnConditional is equivalent to On, but with a predicate
-func (e *EventEmitter) OnConditional(event string, predicate interface{}, handler interface{}) func() {
+func (e *EventEmitter) OnConditional(event string, predicate, handler interface{}) func() {
 	return e.on(event, predicate, handler)
 }
 
-func (e *EventEmitter) on(event string, predicate interface{}, handler interface{}) func() {
+func (e *EventEmitter) on(event string, predicate, handler interface{}) func() {
 	if event == "" {
 		panic("event name is empty")
 	}
