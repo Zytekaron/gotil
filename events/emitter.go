@@ -7,8 +7,8 @@ import (
 )
 
 type EventEmitter struct {
-	listeners     map[string]map[uint64]*Listener
-	globals       map[uint64]*Listener
+	listeners map[string]map[uint64]*Listener
+	globals   map[uint64]*Listener
 
 	listenerMutex sync.Mutex
 	globalMutex   sync.Mutex
@@ -37,11 +37,12 @@ func New() *EventEmitter {
 // On creates an event handler and returns
 // a function that can be called to delete it
 //
-// Panics when the event or handler is omitted.
+// Panics when the event or handler is omitted
 //
 // Use All to capture all events. Catch-all handlers must accept
-// ...interface{} OR match the parameters of all other handlers.
-// When Emit is called, if the arguments do not match, it will panic.
+// ...interface{} OR match the parameters of all other handlers
+//
+// When Emit is called, if the arguments do not match, it will panic
 func (e *EventEmitter) On(event string, handler interface{}) func() {
 	return e.on(event, nil, handler)
 }
@@ -99,11 +100,11 @@ func (e *EventEmitter) on(event string, predicate, handler interface{}) func() {
 	}
 }
 
-// Emit an event.
+// Dispatch dispatches an event
 //
 // All non-nil return values will be sent to the
-// returned channel, then it will be closed.
-func (e *EventEmitter) Emit(event string, args ...interface{}) <-chan []interface{} {
+// returned channel, then it will be closed
+func (e *EventEmitter) Dispatch(event string, args ...interface{}) <-chan []interface{} {
 	ch := make(chan []interface{})
 
 	callArgs := make([]reflect.Value, len(args))
@@ -144,26 +145,46 @@ func (e *EventEmitter) Emit(event string, args ...interface{}) <-chan []interfac
 	return ch
 }
 
-func call(function interface{}, args []reflect.Value) []reflect.Value {
-	handler := reflect.ValueOf(function)
-	return handler.Call(args)
+// Emit emits an event and ignores the handler results
+func (e *EventEmitter) Emit(event string, args ...interface{}) {
+	callArgs := make([]reflect.Value, len(args))
+	for i, a := range args {
+		callArgs[i] = reflect.ValueOf(a)
+	}
+
+	e.listenerMutex.Lock()
+	listeners, ok := e.listeners[event]
+	if ok {
+		for _, listener := range listeners {
+			go callHandler(listener, callArgs, nil)
+		}
+	}
+	e.listenerMutex.Unlock()
+
+	e.globalMutex.Lock()
+	for _, listener := range e.globals {
+		go callHandler(listener, callArgs, nil)
+	}
+	e.globalMutex.Unlock()
 }
 
 func callHandler(listener *Listener, args []reflect.Value, ch chan<- []interface{}) {
 	if listener.predicate != nil {
-		res := call(listener.predicate, args)
+		res := reflect.ValueOf(listener.predicate).Call(args)
 		if !res[0].Interface().(bool) {
 			return
 		}
 	}
 
-	values := call(listener.handler, args)
+	values := reflect.ValueOf(listener.handler).Call(args)
 
-	res := make([]interface{}, 0)
-	for _, value := range values {
-		res = append(res, value.Interface())
-	}
-	if res != nil {
-		ch <- res
+	if ch != nil {
+		res := make([]interface{}, 0)
+		for _, value := range values {
+			res = append(res, value.Interface())
+		}
+		if res != nil {
+			ch <- res
+		}
 	}
 }

@@ -32,7 +32,7 @@ func TestResponses(t *testing.T) {
 	emitter.OnConditional(All, func() bool { return false }, func() string { return "catch-all-predicate (disabled)" })
 
 	// calls a (a1), a (a2), and * (catch-all)
-	ch := emitter.Emit("a")
+	ch := emitter.Dispatch("a")
 	values := make([]interface{}, 0)
 	for val := range ch {
 		values = append(values, val[0])
@@ -43,7 +43,7 @@ func TestResponses(t *testing.T) {
 
 	// calls * (catch-all)
 	// (c event was cancelled)
-	ch = emitter.Emit("c")
+	ch = emitter.Dispatch("c")
 	values = make([]interface{}, 0)
 	for val := range ch {
 		values = append(values, val)
@@ -51,6 +51,8 @@ func TestResponses(t *testing.T) {
 	if len(values) != 2 {
 		t.Error("Expected 1 values, got", len(values), values)
 	}
+
+	emitter.Emit("d")
 
 	<-time.After(time.Millisecond)
 }
