@@ -17,8 +17,8 @@ type EventEmitter struct {
 type Listener struct {
 	id        uint64
 	event     string
-	predicate interface{}
-	handler   interface{}
+	predicate any
+	handler   any
 }
 
 // All is a way to specify "all events"
@@ -40,19 +40,19 @@ func New() *EventEmitter {
 // Panics when the event or handler is omitted
 //
 // Use All to capture all events. Catch-all handlers must accept
-// ...interface{} OR match the parameters of all other handlers
+// ...any OR match the parameters of all other handlers
 //
 // When Emit is called, if the arguments do not match, it will panic
-func (e *EventEmitter) On(event string, handler interface{}) func() {
+func (e *EventEmitter) On(event string, handler any) func() {
 	return e.on(event, nil, handler)
 }
 
 // OnConditional is equivalent to On, but with a predicate
-func (e *EventEmitter) OnConditional(event string, predicate, handler interface{}) func() {
+func (e *EventEmitter) OnConditional(event string, predicate, handler any) func() {
 	return e.on(event, predicate, handler)
 }
 
-func (e *EventEmitter) on(event string, predicate, handler interface{}) func() {
+func (e *EventEmitter) on(event string, predicate, handler any) func() {
 	if event == "" {
 		panic("event name is empty")
 	}
@@ -104,8 +104,8 @@ func (e *EventEmitter) on(event string, predicate, handler interface{}) func() {
 //
 // All non-nil return values will be sent to the
 // returned channel, then it will be closed
-func (e *EventEmitter) Dispatch(event string, args ...interface{}) <-chan []interface{} {
-	ch := make(chan []interface{})
+func (e *EventEmitter) Dispatch(event string, args ...any) <-chan []any {
+	ch := make(chan []any)
 
 	callArgs := make([]reflect.Value, len(args))
 	for i, a := range args {
@@ -146,7 +146,7 @@ func (e *EventEmitter) Dispatch(event string, args ...interface{}) <-chan []inte
 }
 
 // Emit emits an event and ignores the handler results
-func (e *EventEmitter) Emit(event string, args ...interface{}) {
+func (e *EventEmitter) Emit(event string, args ...any) {
 	callArgs := make([]reflect.Value, len(args))
 	for i, a := range args {
 		callArgs[i] = reflect.ValueOf(a)
@@ -168,7 +168,7 @@ func (e *EventEmitter) Emit(event string, args ...interface{}) {
 	e.globalMutex.Unlock()
 }
 
-func callHandler(listener *Listener, args []reflect.Value, ch chan<- []interface{}) {
+func callHandler(listener *Listener, args []reflect.Value, ch chan<- []any) {
 	if listener.predicate != nil {
 		res := reflect.ValueOf(listener.predicate).Call(args)
 		if !res[0].Interface().(bool) {
@@ -179,7 +179,7 @@ func callHandler(listener *Listener, args []reflect.Value, ch chan<- []interface
 	values := reflect.ValueOf(listener.handler).Call(args)
 
 	if ch != nil {
-		res := make([]interface{}, 0)
+		res := make([]any, 0)
 		for _, value := range values {
 			res = append(res, value.Interface())
 		}
