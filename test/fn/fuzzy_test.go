@@ -14,37 +14,71 @@ func TestFuzzyString(t *testing.T) {
 
 	needle = "NASA"
 	haystack = "National Aeronautics and Space Administration"
-	if r := Fuzzy(needle, haystack); !r {
-		t.Error("Invalid result for Test 1 - NASA")
+	if !Fuzzy(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
 	}
 
 	needle = "Hero Gang"
 	haystack = "Hermione Granger"
-	if r := Fuzzy(needle, haystack); !r {
-		t.Error("Invalid result for Test 2 - Hero Gang")
+	if !Fuzzy(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
 	}
 
 	needle = "Zyk"
 	haystack = "Zytekaron"
-	if r := Fuzzy(needle, haystack); !r {
-		t.Error("Invalid result for Test 3 - Zyk")
+	if !Fuzzy(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
 	}
 
 	needle = "Zyke"
 	haystack = "Zytekaron"
-	if r := Fuzzy(needle, haystack); r {
-		t.Error("Invalid result for Test 4 - Zyke")
+	if Fuzzy(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
 	}
 
 	needle = "13579"
 	haystack = "12345678"
-	if r := Fuzzy(needle, haystack); r {
-		t.Error("Invalid result for Test 5 - 13579")
+	if Fuzzy(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
 	}
 
 	needle = "23"
 	haystack = "4321"
-	if r := Fuzzy(needle, haystack); r {
-		t.Error("Invalid result for Test 6 - 23")
+	if Fuzzy(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
+	}
+}
+
+func TestFuzzySlice(t *testing.T) {
+	haystack := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+	needle := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	if !FuzzySlice(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
+	}
+
+	needle = []int{1, 2, 4, 8}
+	if !FuzzySlice(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
+	}
+
+	needle = []int{0, 5, 9}
+	if !FuzzySlice(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
+	}
+
+	needle = []int{1, 4, 2, 8}
+	if FuzzySlice(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
+	}
+
+	needle = []int{15, 5, 8, 15, 20}
+	if FuzzySlice(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
+	}
+
+	needle = []int{1, 2, 4, 14}
+	if FuzzySlice(needle, haystack) {
+		t.Error("invalid result for:", needle, haystack)
 	}
 }
