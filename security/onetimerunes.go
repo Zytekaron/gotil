@@ -83,5 +83,5 @@ func index(charset []rune, char rune) int {
 
 // GenerateKey generates a key with a given length
 func (o *OneTimeRunes) GenerateKey(length int) []rune {
-	return random.MustSecureRunes(length, o.Chars)
+	return random.MustSecureSlice(length, o.Chars)
 }

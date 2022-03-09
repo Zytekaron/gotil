@@ -26,6 +26,6 @@ func TestRunesMessageIntegrity(t *testing.T) {
 	decoded := otp.Decode(encoded, key)
 
 	if string(decoded) != message {
-		t.Error("Encoded and Decoded text are not the same\n\tMessage >", message, "\n\tDecoded >", string(decoded))
+		t.Error("encoded and decoded text are not the same\n\tmessage >", message, "\n\tdecoded >", string(decoded))
 	}
 }
