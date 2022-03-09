@@ -10,42 +10,42 @@ import (
 var defaultRand = rand.NewSource(time.Now().UnixNano())
 
 // Randomizer is an implementation of the alias method
-type Randomizer struct {
+type Randomizer[T any] struct {
 	secure    bool
 	weights   []float64
-	results   []interface{}
+	results   []T
 	sampleInt func() int
 	ready     bool
 }
 
 // RandomizerElement is an element of a Randomizer
-type RandomizerElement struct {
+type RandomizerElement[T any] struct {
 	Weight float64
-	Result interface{}
+	Result T
 }
 
 // NewRandomizer creates a Randomizer instance
-func NewRandomizer() *Randomizer {
-	return &Randomizer{
+func NewRandomizer[T any]() *Randomizer[T] {
+	return &Randomizer[T]{
 		secure:  false,
 		weights: make([]float64, 0),
-		results: make([]interface{}, 0),
+		results: make([]T, 0),
 	}
 }
 
 // NewSecureRandomizer creates a Randomizer
 // instance that uses a cryptographically secure
 // source for random number and sample generation
-func NewSecureRandomizer() *Randomizer {
-	return &Randomizer{
+func NewSecureRandomizer[T any]() *Randomizer[T] {
+	return &Randomizer[T]{
 		secure:  true,
 		weights: make([]float64, 0),
-		results: make([]interface{}, 0),
+		results: make([]T, 0),
 	}
 }
 
 // Add adds elements to the Randomizer
-func (r *Randomizer) Add(weight float64, result interface{}) error {
+func (r *Randomizer[T]) Add(weight float64, result T) error {
 	if r.ready {
 		return errors.New("randomizer has already been prepared and is now immutable")
 	}
@@ -55,12 +55,12 @@ func (r *Randomizer) Add(weight float64, result interface{}) error {
 }
 
 // AddElement adds elements to the Randomizer
-func (r *Randomizer) AddElement(element *RandomizerElement) error {
+func (r *Randomizer[T]) AddElement(element *RandomizerElement[T]) error {
 	return r.Add(element.Weight, element.Result)
 }
 
 // AddMany adds multiple elements to the Randomizer from an array of elements
-func (r *Randomizer) AddMany(elements []RandomizerElement) error {
+func (r *Randomizer[T]) AddMany(elements []RandomizerElement[T]) error {
 	if r.ready {
 		return errors.New("randomizer has already been prepared and is now immutable")
 	}
@@ -72,7 +72,7 @@ func (r *Randomizer) AddMany(elements []RandomizerElement) error {
 }
 
 // Prepare the randomizer for sampling
-func (r *Randomizer) Prepare() {
+func (r *Randomizer[T]) Prepare() {
 	var rng *rand.Rand
 	if r.secure {
 		rng = SecureRng
@@ -85,7 +85,7 @@ func (r *Randomizer) Prepare() {
 
 // Sample the alias method to get a random
 // value, respecting the weights of each element
-func (r *Randomizer) Sample() (interface{}, error) {
+func (r *Randomizer[T]) Sample() (T, error) {
 	if !r.ready {
 		return nil, errors.New("randomizer 'prepare' method must be called before sampling may begin")
 	}
@@ -94,7 +94,7 @@ func (r *Randomizer) Sample() (interface{}, error) {
 
 // MustSample samples the alias method to get a random
 // value, respecting the weights of each element
-func (r *Randomizer) MustSample() interface{} {
+func (r *Randomizer[T]) MustSample() T {
 	res, err := r.Sample()
 	if err != nil {
 		panic(err)
@@ -104,11 +104,11 @@ func (r *Randomizer) MustSample() interface{} {
 
 // SampleMany samples the alias method to get random
 // values, respecting the weights of each element
-func (r *Randomizer) SampleMany(count int) ([]interface{}, error) {
+func (r *Randomizer[T]) SampleMany(count int) ([]T, error) {
 	if !r.ready {
 		return nil, errors.New("randomizer 'prepare' method must be called before sampling may begin")
 	}
-	results := make([]interface{}, count)
+	results := make([]T, count)
 	for i := range results {
 		results[i] = r.sample()
 	}
@@ -117,7 +117,7 @@ func (r *Randomizer) SampleMany(count int) ([]interface{}, error) {
 
 // MustSampleMany samples the alias method to get random
 // values, respecting the weights of each element
-func (r *Randomizer) MustSampleMany(count int) []interface{} {
+func (r *Randomizer[T]) MustSampleMany(count int) []T {
 	res, err := r.SampleMany(count)
 	if err != nil {
 		panic(err)
@@ -125,12 +125,12 @@ func (r *Randomizer) MustSampleMany(count int) []interface{} {
 	return res
 }
 
-func (r *Randomizer) sample() interface{} {
+func (r *Randomizer[T]) sample() T {
 	return r.results[r.sampleInt()]
 }
 
 func aliasMethod(probabilities []float64, rng *rand.Rand) func() int {
-	sum := maths.SumFloat64(probabilities)
+	sum := maths.Sum(probabilities)
 
 	probMultiplier := float64(len(probabilities)) / sum
 	for i := range probabilities {

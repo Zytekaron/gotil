@@ -6,29 +6,29 @@ import (
 )
 
 func TestNewRandomizer(t *testing.T) {
-	rand := NewRandomizer()
+	rand := NewRandomizer[int]()
 	err := rand.Add(10, 0)
 	if err != nil {
-		t.Error("error occurred whilst adding 1 to randomizer:", err.Error())
+		t.Error("error adding 1 to randomizer:", err.Error())
 	}
 
-	err = rand.AddElement(&RandomizerElement{Weight: 20, Result: 1})
+	err = rand.AddElement(&RandomizerElement[int]{Weight: 20, Result: 1})
 	if err != nil {
-		t.Error("error occurred whilst adding 2 to randomizer:", err.Error())
+		t.Error("error adding 2 to randomizer:", err.Error())
 	}
 
-	err = rand.AddMany([]RandomizerElement{
+	err = rand.AddMany([]RandomizerElement[int]{
 		{30, 2},
 		{40, 3},
 	})
 	if err != nil {
-		t.Error("error occurred whilst adding 3, 4 to randomizer:", err.Error())
+		t.Error("error adding 3, 4 to randomizer:", err.Error())
 	}
 
 	rand.Prepare()
 
-	for i := 0; i < 1000000; i++ {
-		_, err := rand.Sample()
+	for i := 0; i < 1024; i++ {
+		_, err = rand.Sample()
 		if err != nil {
 			t.Error(err)
 		}
@@ -36,29 +36,29 @@ func TestNewRandomizer(t *testing.T) {
 }
 
 func TestNewSecureRandomizer(t *testing.T) {
-	rand := NewSecureRandomizer()
+	rand := NewSecureRandomizer[int]()
 	err := rand.Add(10, 0)
 	if err != nil {
-		t.Error("error occurred whilst adding 1 to randomizer:", err.Error())
+		t.Error("error adding 1 to randomizer:", err.Error())
 	}
 
-	err = rand.AddElement(&RandomizerElement{Weight: 20, Result: 1})
+	err = rand.AddElement(&RandomizerElement[int]{Weight: 20, Result: 1})
 	if err != nil {
-		t.Error("error occurred whilst adding 2 to randomizer:", err.Error())
+		t.Error("error adding 2 to randomizer:", err.Error())
 	}
 
-	err = rand.AddMany([]RandomizerElement{
+	err = rand.AddMany([]RandomizerElement[int]{
 		{30, 2},
 		{40, 3},
 	})
 	if err != nil {
-		t.Error("error occurred whilst adding 3, 4 to randomizer:", err.Error())
+		t.Error("error adding 3, 4 to randomizer:", err.Error())
 	}
 
 	rand.Prepare()
 
-	for i := 0; i < 1000000; i++ {
-		_, err := rand.Sample()
+	for i := 0; i < 1024; i++ {
+		_, err = rand.Sample()
 		if err != nil {
 			t.Error(err)
 		}
