@@ -38,7 +38,7 @@ func TestResponses(t *testing.T) {
 		values = append(values, val[0])
 	}
 	if len(values) != 4 {
-		t.Error("Expected 3 values, got", len(values), values)
+		t.Error("expected 3 values, got", len(values), values)
 	}
 
 	// calls * (catch-all)
@@ -49,7 +49,7 @@ func TestResponses(t *testing.T) {
 		values = append(values, val)
 	}
 	if len(values) != 2 {
-		t.Error("Expected 1 values, got", len(values), values)
+		t.Error("expected 1 value, got", len(values), values)
 	}
 
 	emitter.Emit("d")
