@@ -2,31 +2,46 @@ package maths
 
 import (
 	. "github.com/zytekaron/gotil/maths"
-	"math"
 	"math/rand"
 	"testing"
+	"time"
 )
 
-func TestAverageInt(t *testing.T) {
-	arr := make([]int, 32)
-	for i := range arr {
-		arr[i] = rand.Intn(65536)
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+func TestSum(t *testing.T) {
+	var arr []int
+	if Sum(arr) != 0 {
+		t.Error("expected 0 but got", Sum(arr))
 	}
-	avg1 := AverageInt(arr)
-	avg2 := float64(SumInt(arr)) / float64(len(arr))
-	if avg1 != avg2 {
-		t.Error("average values for []int are not equal")
+
+	arr = []int{1, 4, 5, 5, 6, 6}
+	if Sum(arr) != 27 {
+		t.Error("expected 27 but got", Sum(arr))
 	}
 }
 
-func TestAverageFloat(t *testing.T) {
-	arr := make([]float64, 32)
-	for i := range arr {
-		arr[i] = rand.Float64() * 65536
+func TestAverage(t *testing.T) {
+	var arr1 []float64
+	if Average(arr1) != 0 {
+		t.Error("expected 0 but got", Average(arr1))
 	}
-	avg1 := AverageFloat64(arr)
-	avg2 := SumFloat64(arr) / float64(len(arr))
-	if math.Abs(avg1-avg2) >= .1 {
-		t.Error("average values for []float64 are not similar", avg1, avg2)
+
+	arr2 := []float64{1, 4, 5, 5, 6, 6}
+	if Average(arr2) != 4.5 {
+		t.Error("expected 4.5 but got", Average(arr2))
+	}
+
+	arr3 := make([]float64, 1024)
+	for i := range arr3 {
+		arr3[i] = rand.Float64()
+	}
+	expect := Sum(arr3) / float64(len(arr3))
+	roundedResult := Round(Average(arr3), 9)
+	roundedExpect := Round(expect, 9)
+	if roundedResult != roundedExpect {
+		t.Error("expected", roundedExpect, "but got", roundedResult)
 	}
 }
