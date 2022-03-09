@@ -6,18 +6,23 @@ import (
 	"math"
 )
 
-// SecureRunes generates a random rune slice of a given length and character set
-func SecureRunes(length int, chars []rune) ([]rune, error) {
+type ChoiceValue interface {
+	~rune | ~byte
+}
+
+// SecureSlice generates a random slice of a given length and value choice set
+func SecureSlice[T ChoiceValue](length int, chars []T) ([]T, error) {
 	// maximum valid value for modular division
 	// to maintain a perfectly even distribution
 	maxValid := (math.MaxUint16/len(chars))*len(chars) - 1
 
 	// the resulting runes
-	result := make([]rune, 0)
+	result := make([]T, length)
+	index := 0
 	// until the string is full
-	for len(result) < length {
+	for index < length {
 		// the amount of entropy to generate for each pass
-		entropyLength := int(math.Ceil(float64(length-len(result))*1.1) * 2)
+		entropyLength := int(math.Ceil(float64(length-index)*1.1) * 2)
 
 		// generate entropy
 		entropy := make([]byte, entropyLength)
@@ -26,9 +31,8 @@ func SecureRunes(length int, chars []rune) ([]rune, error) {
 			return nil, err
 		}
 
-		// the entropy index
 		i := 0
-		for i < entropyLength && len(result) < length {
+		for i < entropyLength && index < length {
 			// read 2 bytes
 			bytes := entropy[i : i+2]
 			value := int(binary.BigEndian.Uint16(bytes))
@@ -36,8 +40,8 @@ func SecureRunes(length int, chars []rune) ([]rune, error) {
 			// ignore values that would create an uneven distribution
 			if value <= maxValid {
 				// safe distribution for modular division
-				char := chars[value%len(chars)]
-				result = append(result, char)
+				result[index] = T(chars[value%len(chars)])
+				index++
 			}
 		}
 	}
@@ -45,28 +49,28 @@ func SecureRunes(length int, chars []rune) ([]rune, error) {
 	return result, nil
 }
 
-// MustSecureRunes generates a random rune slice a given length
-// and character set and ignore errors caused by the random source
-func MustSecureRunes(length int, chars []rune) []rune {
-	res, err := SecureRunes(length, chars)
+// MustSecureSlice generates a random slice a given length and
+// value choice set and ignore errors caused by the random source
+func MustSecureSlice[T ChoiceValue](length int, chars []T) []T {
+	res, err := SecureSlice(length, chars)
 	if err != nil {
 		panic(err)
 	}
 	return res
 }
 
-// SecureString generates a random string of a given length and character set
-func SecureString(length int, chars []rune) (string, error) {
-	res, err := SecureRunes(length, chars)
+// SecureString generates a random string of a given length and value choice set
+func SecureString[T ~string](length int, chars T) (string, error) {
+	res, err := SecureSlice(length, []rune(chars))
 	if err != nil {
 		return "", err
 	}
 	return string(res), nil
 }
 
-// MustSecureString generates a random string of a given length
-// and character set and ignore errors caused by the random source
-func MustSecureString(length int, chars []rune) string {
+// MustSecureString generates a random string of a given length and
+// value choice set and ignore errors caused by the random source
+func MustSecureString[T ~string](length int, chars T) string {
 	str, err := SecureString(length, chars)
 	if err != nil {
 		panic(err)
