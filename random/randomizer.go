@@ -87,7 +87,8 @@ func (r *Randomizer[T]) Prepare() {
 // value, respecting the weights of each element
 func (r *Randomizer[T]) Sample() (T, error) {
 	if !r.ready {
-		return nil, errors.New("randomizer 'prepare' method must be called before sampling may begin")
+		var t T
+		return t, errors.New("randomizer 'prepare' method must be called before sampling may begin")
 	}
 	return r.sample(), nil
 }
