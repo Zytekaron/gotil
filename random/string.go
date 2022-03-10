@@ -11,10 +11,10 @@ type ChoiceValue interface {
 }
 
 // SecureSlice generates a random slice of a given length and value choice set
-func SecureSlice[T ChoiceValue](length int, chars []T) ([]T, error) {
+func SecureSlice[T ChoiceValue](length int, choices []T) ([]T, error) {
 	// maximum valid value for modular division
 	// to maintain a perfectly even distribution
-	maxValid := (math.MaxUint16/len(chars))*len(chars) - 1
+	maxValid := (math.MaxUint16/len(choices))*len(choices) - 1
 
 	// the resulting runes
 	result := make([]T, length)
@@ -40,7 +40,7 @@ func SecureSlice[T ChoiceValue](length int, chars []T) ([]T, error) {
 			// ignore values that would create an uneven distribution
 			if value <= maxValid {
 				// safe distribution for modular division
-				result[index] = T(chars[value%len(chars)])
+				result[index] = T(choices[value%len(choices)])
 				index++
 			}
 		}
@@ -51,8 +51,8 @@ func SecureSlice[T ChoiceValue](length int, chars []T) ([]T, error) {
 
 // MustSecureSlice generates a random slice a given length and
 // value choice set and ignore errors caused by the random source
-func MustSecureSlice[T ChoiceValue](length int, chars []T) []T {
-	res, err := SecureSlice(length, chars)
+func MustSecureSlice[T ChoiceValue](length int, choices []T) []T {
+	res, err := SecureSlice(length, choices)
 	if err != nil {
 		panic(err)
 	}
@@ -60,8 +60,8 @@ func MustSecureSlice[T ChoiceValue](length int, chars []T) []T {
 }
 
 // SecureString generates a random string of a given length and value choice set
-func SecureString[T ~string](length int, chars T) (string, error) {
-	res, err := SecureSlice(length, []rune(chars))
+func SecureString[T ~string](length int, choices T) (string, error) {
+	res, err := SecureSlice(length, []rune(choices))
 	if err != nil {
 		return "", err
 	}
@@ -70,8 +70,8 @@ func SecureString[T ~string](length int, chars T) (string, error) {
 
 // MustSecureString generates a random string of a given length and
 // value choice set and ignore errors caused by the random source
-func MustSecureString[T ~string](length int, chars T) string {
-	str, err := SecureString(length, chars)
+func MustSecureString[T ~string](length int, choices T) string {
+	str, err := SecureString(length, choices)
 	if err != nil {
 		panic(err)
 	}
