@@ -5,6 +5,6 @@ import (
 	"testing"
 )
 
-func TestCrypto(t *testing.T) {
+func TestCrypto(*testing.T) {
 	SecureRng.Float64()
 }

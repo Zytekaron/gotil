@@ -25,11 +25,11 @@ func TestSecureString(t *testing.T) {
 	}
 }
 
-func TestMustSecureRunes(t *testing.T) {
+func TestMustSecureRunes(*testing.T) {
 	MustSecureSlice(32, []rune("0123456789abcdef"))
 }
 
-func TestMustSecureString(t *testing.T) {
+func TestMustSecureString(*testing.T) {
 	MustSecureString(32, "0123456789abcdef")
 }
 

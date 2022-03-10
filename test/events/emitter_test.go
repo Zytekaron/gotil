@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func TestGlobalEvent(t *testing.T) {
+func TestGlobalEvent(*testing.T) {
 	emitter := New()
 	emitter.On("eventName", func(args ...interface{}) {
 		fmt.Println(args...)

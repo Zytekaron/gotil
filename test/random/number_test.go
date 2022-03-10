@@ -5,6 +5,6 @@ import (
 	"testing"
 )
 
-func TestUint64(t *testing.T) {
+func TestUint64(*testing.T) {
 	Uint64()
 }
