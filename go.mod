@@ -1,4 +1,4 @@
-module github.com/zytekaron/gotil
+module github.com/zytekaron/gotil/v2
 
 go 1.18
 
