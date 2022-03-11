@@ -1,7 +1,7 @@
 package security
 
 import (
-	"github.com/zytekaron/gotil/random"
+	"github.com/zytekaron/gotil/v2/random"
 )
 
 // OneTimePad is an implementation of the

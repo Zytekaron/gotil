@@ -1,7 +1,7 @@
 package optional
 
 import (
-	. "github.com/zytekaron/gotil/optional"
+	. "github.com/zytekaron/gotil/v2/optional"
 	"strconv"
 	"testing"
 )

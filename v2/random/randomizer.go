@@ -2,7 +2,7 @@ package random
 
 import (
 	"errors"
-	"github.com/zytekaron/gotil/maths"
+	"github.com/zytekaron/gotil/v2/maths"
 	"math/rand"
 	"time"
 )

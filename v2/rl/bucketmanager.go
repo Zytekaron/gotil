@@ -1,7 +1,7 @@
 package rl
 
 import (
-	"github.com/zytekaron/gotil/fn"
+	"github.com/zytekaron/gotil/v2/fn"
 	"time"
 )
 

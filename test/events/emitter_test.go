@@ -2,7 +2,7 @@ package events
 
 import (
 	"fmt"
-	. "github.com/zytekaron/gotil/events"
+	. "github.com/zytekaron/gotil/v2/events"
 	"testing"
 	"time"
 )

@@ -2,7 +2,7 @@ package rl
 
 import (
 	"fmt"
-	"github.com/zytekaron/gotil/rl"
+	"github.com/zytekaron/gotil/v2/rl"
 	"testing"
 	"time"
 )

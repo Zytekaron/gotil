@@ -1,7 +1,7 @@
 package security
 
 import (
-	. "github.com/zytekaron/gotil/security"
+	. "github.com/zytekaron/gotil/v2/security"
 	"testing"
 )
 

@@ -1,7 +1,7 @@
 package maths
 
 import (
-	. "github.com/zytekaron/gotil/maths"
+	. "github.com/zytekaron/gotil/v2/maths"
 	"math/rand"
 	"testing"
 	"time"

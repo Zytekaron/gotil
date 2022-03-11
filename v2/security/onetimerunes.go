@@ -1,6 +1,6 @@
 package security
 
-import "github.com/zytekaron/gotil/random"
+import "github.com/zytekaron/gotil/v2/random"
 
 // OneTimeRunes is an implementation of the
 // One-Time Pad information security algorithm
