@@ -4,6 +4,13 @@ Version 2.0.0
 
 ## Release Notes
 
+
+### Version 2.1.0
+
+- new features:
+  - added json marshalling and unmarshalling for type `optional.Optional[T]`
+  - added `GetOrZero() T` method to type `optional.Optional[T]` for naming consistency
+
 ### Version 2.0.0
 
 Updated library to Go 1.18, migrated to and created new generic types and functions.
