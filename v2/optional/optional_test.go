@@ -1,7 +1,6 @@
 package optional
 
 import (
-	. "github.com/zytekaron/gotil/v2/optional"
 	"strconv"
 	"testing"
 )
@@ -35,8 +34,8 @@ func TestStateMethods(t *testing.T) {
 	if present.Get() != 123 {
 		t.Error("expected 123 but got", present.Get())
 	}
-	if present.GetOrZero() != 123 {
-		t.Error("expected 123 but got", present.GetOrZero())
+	if present.OrElseZero() != 123 {
+		t.Error("expected 123 but got", present.OrElseZero())
 	}
 	if present.OrElse(0) != 123 {
 		t.Error("expected 123 but got", present.OrElse(0))
@@ -51,8 +50,8 @@ func TestStateMethods(t *testing.T) {
 	}
 
 	empty := Empty[int]()
-	if empty.GetOrZero() != 0 {
-		t.Error("expected 0 but got", empty.GetOrZero())
+	if empty.OrElseZero() != 0 {
+		t.Error("expected 0 but got", empty.OrElseZero())
 	}
 
 	val = 0

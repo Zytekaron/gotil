@@ -48,6 +48,14 @@ func (o Optional[T]) GetOrZero() T {
 	return zero
 }
 
+func (o Optional[T]) OrElseZero() T {
+	if o.present {
+		return *o.value
+	}
+	var zero T
+	return zero
+}
+
 func (o Optional[T]) OrElse(other T) T {
 	if o.present {
 		return *o.value

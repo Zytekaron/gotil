@@ -1,7 +1,6 @@
 package maths
 
 import (
-	. "github.com/zytekaron/gotil/v2/maths"
 	"testing"
 )
 

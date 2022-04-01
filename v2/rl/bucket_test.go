@@ -1,15 +1,12 @@
 package rl
 
 import (
-	"fmt"
-	"github.com/zytekaron/gotil/v2/rl"
 	"testing"
 	"time"
 )
 
 func TestBucket(t *testing.T) {
-	bucket := rl.NewBucket(5, 10*time.Minute)
-	fmt.Println(bucket)
+	bucket := NewBucket(5, 10*time.Minute)
 
 	ok := bucket.Draw(3)
 	if !ok {

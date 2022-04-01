@@ -1,7 +1,6 @@
 package fn
 
 import (
-	. "github.com/zytekaron/gotil/v2/fn"
 	"os"
 	"testing"
 )
@@ -11,8 +10,8 @@ type Gob struct {
 }
 
 var (
-	gob  = Gob{1, 2, 3, 4}
-	path = "C:\\Users\\Zytekaron\\AppData\\Local\\Temp\\gob.dat"
+	gobj = Gob{1, 2, 3, 4}
+	path = "C:\\Users\\Zytekaron\\AppData\\Local\\Temp\\gobj.dat"
 )
 
 func TestWrite(t *testing.T) {
@@ -22,7 +21,7 @@ func TestWrite(t *testing.T) {
 	}
 	defer file.Close()
 
-	err = WriteGob(file, &gob)
+	err = WriteGob(file, &gobj)
 	if err != nil {
 		t.Error(err)
 	}
@@ -40,7 +39,7 @@ func TestRead(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if res != gob {
+	if res != gobj {
 		// unexported properties will be lost,
 		// but none were used here
 		t.Error("gobs are not the same")
@@ -48,7 +47,7 @@ func TestRead(t *testing.T) {
 }
 
 func TestWriteFile(t *testing.T) {
-	err := WriteGobFile(path, &gob)
+	err := WriteGobFile(path, &gobj)
 	if err != nil {
 		t.Error(err)
 	}
@@ -60,7 +59,7 @@ func TestReadFile(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if res != gob {
+	if res != gobj {
 		// unexported properties will be lost,
 		// but none were used here
 		t.Error("gobs are not the same")

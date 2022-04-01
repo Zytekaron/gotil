@@ -1,7 +1,6 @@
 package random
 
 import (
-	. "github.com/zytekaron/gotil/v2/random"
 	"testing"
 )
 

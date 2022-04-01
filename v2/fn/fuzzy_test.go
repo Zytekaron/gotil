@@ -1,7 +1,6 @@
 package fn
 
 import (
-	. "github.com/zytekaron/gotil/v2/fn"
 	"testing"
 )
 

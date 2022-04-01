@@ -1,7 +1,6 @@
 package rl
 
 import (
-	. "github.com/zytekaron/gotil/v2/rl"
 	"reflect"
 	"testing"
 	"time"
