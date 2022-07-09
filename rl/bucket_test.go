@@ -33,4 +33,13 @@ func TestBucket(t *testing.T) {
 	if n != -5 {
 		t.Error("force draw should return remaining uses, even if negative")
 	}
+
+	n = bucket.DrawMax(5)
+	if n != 0 {
+		t.Error("bucket should return 0 drawn tokens due to a previous overdraw")
+	}
+	n = bucket.RemainingUses()
+	if n != -5 {
+		t.Error("expected remaining uses to be -5 due to previous overdraw")
+	}
 }

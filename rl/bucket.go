@@ -1,8 +1,6 @@
 package rl
 
 import (
-	"golang.org/x/exp/constraints"
-	"math"
 	"time"
 )
 
@@ -13,17 +11,20 @@ type Bucket struct {
 	NextReset  time.Time
 }
 
-var unixEpoch = time.Unix(0, 0)
-
 // NewBucket creates a new Bucket.
 func NewBucket(limit int, resetAfter time.Duration) *Bucket {
-	return &Bucket{0, limit, resetAfter, unixEpoch}
+	return &Bucket{
+		Uses:       0,
+		Limit:      limit,
+		ResetAfter: resetAfter,
+		NextReset:  unixEpoch,
+	}
 }
 
 // CanDraw checks if a certain number of tokens can be drawn.
 func (b *Bucket) CanDraw(amount int) bool {
 	b.ensureReset()
-	return b.RemainingUses() >= amount
+	return b.remainingUsesInternal() >= amount
 }
 
 // Draw draws tokens from a bucket, returning false and doing nothing if there are not enough.
@@ -39,7 +40,8 @@ func (b *Bucket) Draw(amount int) bool {
 // DrawMax draws as many tokens from as possible up to `amount`, returning the number of drawn tokens.
 func (b *Bucket) DrawMax(amount int) int {
 	b.ensureReset()
-	count := min(amount, b.RemainingUses())
+	available := max(0, b.remainingUsesInternal())
+	count := min(amount, available)
 	b.Uses += count
 	return count
 }
@@ -52,7 +54,7 @@ func (b *Bucket) DrawMax(amount int) int {
 func (b *Bucket) ForceDraw(amount int) int {
 	b.ensureReset()
 	b.Uses += amount
-	return b.RemainingUses()
+	return b.remainingUsesInternal()
 }
 
 // RemainingUses returns the remaining uses until the bucket is depleted, which may be negative.
@@ -73,16 +75,14 @@ func (b *Bucket) Reset() {
 	b.NextReset = time.Now().Add(b.ResetAfter)
 }
 
+// used to prevent a duplicate ensureReset call when used internally
+func (b *Bucket) remainingUsesInternal() int {
+	return b.Limit - b.Uses
+}
+
+// reset the bucket whenever the next reset time has passed
 func (b *Bucket) ensureReset() {
 	if b.RemainingTime() == 0 {
 		b.Reset()
 	}
-}
-
-func max[T constraints.Integer | constraints.Float](a T, b T) T {
-	return T(math.Max(float64(a), float64(b)))
-}
-
-func min[T constraints.Integer | constraints.Float](a T, b T) T {
-	return T(math.Min(float64(a), float64(b)))
 }
