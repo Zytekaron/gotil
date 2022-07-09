@@ -4,7 +4,7 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-// Sum calculates the sum of the elements in a slice
+// Sum calculates the sum of the elements in a slice.
 func Sum[T constraints.Integer | constraints.Float](nums []T) T {
 	var sum T
 	for _, e := range nums {
@@ -13,6 +13,10 @@ func Sum[T constraints.Integer | constraints.Float](nums []T) T {
 	return sum
 }
 
+// Average calculates the average of the elements in a slice.
+//
+// This function uses rolling average calculation to sidestep
+// issues related to overflow with large numbers in big slices.
 func Average[T constraints.Float](input []T) T {
 	var result T
 	for i := 0; i < len(input); i++ {

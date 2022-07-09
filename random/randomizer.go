@@ -9,42 +9,49 @@ import (
 
 var defaultRand = rand.NewSource(time.Now().UnixNano())
 
-// Randomizer is an implementation of the alias method
+// Randomizer is an implementation of the alias method, designed
+// to efficiently sample from a discrete probability distribution.
+//
+// Results are added along with their weight (likelihood of being
+// drawn among other elements), and when prepared, they may be drawn.
+//
+// Time complexity of preparation: O(nlogn)
+//
+// Time complexity of sampling: O(1)
 type Randomizer[T any] struct {
-	secure    bool
+	rng       *rand.Rand
 	weights   []float64
 	results   []T
 	sampleInt func() int
 	ready     bool
 }
 
-// RandomizerElement is an element of a Randomizer
+// RandomizerElement is an element of a Randomizer.
 type RandomizerElement[T any] struct {
 	Weight float64
 	Result T
 }
 
-// NewRandomizer creates a Randomizer instance
+// NewRandomizerRNG creates a Randomizer instance that uses a custom random number generator.
+func NewRandomizerRNG[T any](rng *rand.Rand) *Randomizer[T] {
+	return &Randomizer[T]{
+		rng:     rng,
+		weights: make([]float64, 0),
+		results: make([]T, 0),
+	}
+}
+
+// NewRandomizer creates a Randomizer instance using a simple pseudo-random number generator.
 func NewRandomizer[T any]() *Randomizer[T] {
-	return &Randomizer[T]{
-		secure:  false,
-		weights: make([]float64, 0),
-		results: make([]T, 0),
-	}
+	return NewRandomizerRNG[T](rand.New(defaultRand))
 }
 
-// NewSecureRandomizer creates a Randomizer
-// instance that uses a cryptographically secure
-// source for random number and sample generation
+// NewSecureRandomizer creates a Randomizer instance that uses a cryptographically secure random number generator.
 func NewSecureRandomizer[T any]() *Randomizer[T] {
-	return &Randomizer[T]{
-		secure:  true,
-		weights: make([]float64, 0),
-		results: make([]T, 0),
-	}
+	return NewRandomizerRNG[T](SecureRng)
 }
 
-// Add adds elements to the Randomizer
+// Add adds elements to the Randomizer.
 func (r *Randomizer[T]) Add(weight float64, result T) error {
 	if r.ready {
 		return errors.New("randomizer has already been prepared and is now immutable")
@@ -54,12 +61,12 @@ func (r *Randomizer[T]) Add(weight float64, result T) error {
 	return nil
 }
 
-// AddElement adds elements to the Randomizer
+// AddElement adds elements to the Randomizer.
 func (r *Randomizer[T]) AddElement(element *RandomizerElement[T]) error {
 	return r.Add(element.Weight, element.Result)
 }
 
-// AddMany adds multiple elements to the Randomizer from an array of elements
+// AddMany adds multiple elements to the Randomizer from an array of elements.
 func (r *Randomizer[T]) AddMany(elements []RandomizerElement[T]) error {
 	if r.ready {
 		return errors.New("randomizer has already been prepared and is now immutable")
@@ -73,18 +80,11 @@ func (r *Randomizer[T]) AddMany(elements []RandomizerElement[T]) error {
 
 // Prepare the randomizer for sampling
 func (r *Randomizer[T]) Prepare() {
-	var rng *rand.Rand
-	if r.secure {
-		rng = SecureRng
-	} else {
-		rng = rand.New(defaultRand)
-	}
-	r.sampleInt = aliasMethod(r.weights, rng)
+	r.sampleInt = aliasMethod(r.weights, r.rng)
 	r.ready = true
 }
 
-// Sample the alias method to get a random
-// value, respecting the weights of each element
+// Sample samples the alias method to get a random value.
 func (r *Randomizer[T]) Sample() (T, error) {
 	if !r.ready {
 		var t T
@@ -93,8 +93,7 @@ func (r *Randomizer[T]) Sample() (T, error) {
 	return r.sample(), nil
 }
 
-// MustSample samples the alias method to get a random
-// value, respecting the weights of each element
+// MustSample samples the alias method to get a random value.
 func (r *Randomizer[T]) MustSample() T {
 	res, err := r.Sample()
 	if err != nil {
@@ -103,8 +102,7 @@ func (r *Randomizer[T]) MustSample() T {
 	return res
 }
 
-// SampleMany samples the alias method to get random
-// values, respecting the weights of each element
+// SampleMany samples the randomizer to get multiple random values.
 func (r *Randomizer[T]) SampleMany(count int) ([]T, error) {
 	if !r.ready {
 		return nil, errors.New("randomizer 'prepare' method must be called before sampling may begin")
@@ -116,8 +114,7 @@ func (r *Randomizer[T]) SampleMany(count int) ([]T, error) {
 	return results, nil
 }
 
-// MustSampleMany samples the alias method to get random
-// values, respecting the weights of each element
+// MustSampleMany samples the randomizer to get multiple random values.
 func (r *Randomizer[T]) MustSampleMany(count int) []T {
 	res, err := r.SampleMany(count)
 	if err != nil {

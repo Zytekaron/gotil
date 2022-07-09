@@ -40,7 +40,7 @@ func SecureSlice[T ChoiceValue](length int, choices []T) ([]T, error) {
 			// ignore values that would create an uneven distribution
 			if value <= maxValid {
 				// safe distribution for modular division
-				result[index] = T(choices[value%len(choices)])
+				result[index] = choices[value%len(choices)]
 				index++
 			}
 		}

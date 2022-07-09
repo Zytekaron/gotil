@@ -2,6 +2,7 @@ package fn
 
 import (
 	"os"
+	"path"
 	"testing"
 )
 
@@ -10,25 +11,25 @@ type Gob struct {
 }
 
 var (
-	gobj = Gob{1, 2, 3, 4}
-	path = "C:\\Users\\Zytekaron\\AppData\\Local\\Temp\\gobj.dat"
+	obj      = Gob{1, 2, 3, 4}
+	filePath = path.Join(os.TempDir(), "test_gob.dat")
 )
 
 func TestWrite(t *testing.T) {
-	file, err := os.Create(path)
+	file, err := os.Create(filePath)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	err = WriteGob(file, &gobj)
+	err = WriteGob(file, &obj)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestRead(t *testing.T) {
-	file, err := os.Open(path)
+	file, err := os.Open(filePath)
 	if err != nil {
 		panic(err)
 	}
@@ -39,15 +40,13 @@ func TestRead(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if res != gobj {
-		// unexported properties will be lost,
-		// but none were used here
+	if res != obj {
 		t.Error("gobs are not the same")
 	}
 }
 
 func TestWriteFile(t *testing.T) {
-	err := WriteGobFile(path, &gobj)
+	err := WriteGobFile(filePath, &obj)
 	if err != nil {
 		t.Error(err)
 	}
@@ -55,13 +54,11 @@ func TestWriteFile(t *testing.T) {
 
 func TestReadFile(t *testing.T) {
 	var res Gob
-	err := ReadGobFile(path, &res)
+	err := ReadGobFile(filePath, &res)
 	if err != nil {
 		t.Error(err)
 	}
-	if res != gobj {
-		// unexported properties will be lost,
-		// but none were used here
+	if res != obj {
 		t.Error("gobs are not the same")
 	}
 }

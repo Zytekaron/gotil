@@ -26,7 +26,7 @@ const All = "*"
 
 var idCounter uint64
 
-// New creates a new EventEmitter
+// New creates a new EventEmitter.
 func New() *EventEmitter {
 	return &EventEmitter{
 		listeners: make(map[string]map[uint64]*Listener),
@@ -34,20 +34,18 @@ func New() *EventEmitter {
 	}
 }
 
-// On creates an event handler and returns
-// a function that can be called to delete it
+// On creates an event handler and returns a function that can be called to delete it.
 //
-// Panics when the event or handler is omitted
+// Panics when the event or handler is omitted.
 //
-// Use All to capture all events. Catch-all handlers must accept
-// ...any OR match the parameters of all other handlers
+// Use All to capture all events. Catch-all handlers must accept `...any` OR match the parameters of all other handlers.
 //
-// When Emit is called, if the arguments do not match, it will panic
+// When Emit is called, if the arguments do not match, it will panic.
 func (e *EventEmitter) On(event string, handler any) func() {
 	return e.on(event, nil, handler)
 }
 
-// OnConditional is equivalent to On, but with a predicate
+// OnConditional is equivalent to On, but with a predicate.
 func (e *EventEmitter) OnConditional(event string, predicate, handler any) func() {
 	return e.on(event, predicate, handler)
 }
@@ -78,7 +76,6 @@ func (e *EventEmitter) on(event string, predicate, handler any) func() {
 		}
 	}
 
-	// the rest of the f1 uses the listener map
 	e.listenerMutex.Lock()
 	defer e.listenerMutex.Unlock()
 
@@ -100,10 +97,9 @@ func (e *EventEmitter) on(event string, predicate, handler any) func() {
 	}
 }
 
-// Dispatch dispatches an event
+// Dispatch dispatches an event.
 //
-// All non-nil return values will be sent to the
-// returned channel, then it will be closed
+// All non-nil return values will be sent to the returned channel, then it will be closed.
 func (e *EventEmitter) Dispatch(event string, args ...any) <-chan []any {
 	ch := make(chan []any)
 
@@ -145,7 +141,7 @@ func (e *EventEmitter) Dispatch(event string, args ...any) <-chan []any {
 	return ch
 }
 
-// Emit emits an event and ignores the handler results
+// Emit emits an event and ignores the handler results.
 func (e *EventEmitter) Emit(event string, args ...any) {
 	callArgs := make([]reflect.Value, len(args))
 	for i, a := range args {
