@@ -4,14 +4,14 @@ Version 2.2.1
 
 ## Release Notes
 
-### Version 2.2.0
+### Version 2.2
 
 Added new features and fixed/updated most documentation.
 Some minor bug fixes and performance improvements.
 
 - new features:
   - created the `infchan` package with functions allowing the creation of infinitely buffered channels
-  - added synchronous rate limiting types to the `rl` package, with internal mutexing
+  - added synchronous rate limiting types to the `rl` package, with internal mutexing.
   - added `random.NewRandomizerRNG`, allowing for a custom RNG (`*rand.Rand`) to be passed
 - bug fixes:
   - fixed an issue where `rl.Bucket#DrawMax` could draw a negative amount, effectively removing uses / increasing remaining buckets, if `ForceDraw` previously overdrew
@@ -26,13 +26,13 @@ Some minor bug fixes and performance improvements.
     - fixed errors in a couple places
     - added a deprecation comment for `optional.Optional[T]#GetOrZero` in favor of `OrElseZero`
 
-### Version 2.1.0
+### Version 2.1
 
 - new features:
   - added json marshalling and unmarshalling for type `optional.Optional[T]`
   - added `GetOrZero() T` method to type `optional.Optional[T]` for naming consistency
 
-### Version 2.0.0
+### Version 2.0
 
 Updated library to Go 1.18, migrated to and created new generic types and functions.
 
