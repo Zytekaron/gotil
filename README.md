@@ -1,9 +1,30 @@
 # gotil
 
-Version 2.0.0
+Version 2.2.0
 
 ## Release Notes
 
+### Version 2.2.0
+
+Added new features and fixed/updated most documentation.
+Some minor bug fixes and performance improvements.
+
+- new features:
+  - created the `infchan` package with functions allowing the creation of infinitely buffered channels
+  - added synchronous rate limiting types to the `rl` package, with internal mutexing
+  - added `random.NewRandomizerRNG`, allowing for a custom RNG (`*rand.Rand`) to be passed
+- bug fixes:
+  - fixed an issue where `rl.Bucket#DrawMax` could draw a negative amount, effectively removing uses / increasing remaining buckets, if `ForceDraw` previously overdrew
+- other changes:
+  - tests now create files in the OS temp directory (`os.TempDir()`)
+  - modified some internal implementations
+    - improved speed of `security.OneTimeRunes` by using a map instead of indexing
+    - minimally improved performance of some `rl.Bucket` operations
+  - complete documentation refactoring
+    - added documentation where it was missing
+    - formatted existing documentation to central styles
+    - fixed errors in a couple places
+    - added a deprecation comment for `optional.Optional[T]#GetOrZero` in favor of `OrElseZero`
 
 ### Version 2.1.0
 

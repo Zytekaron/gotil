@@ -1,12 +1,14 @@
 package rl
 
 import (
+	"os"
+	"path"
 	"reflect"
 	"testing"
 	"time"
 )
 
-var path = "C:\\Users\\Zytekaron\\AppData\\Local\\Temp\\rl.dat"
+var filePath = path.Join(os.TempDir(), "test_bucketmanager.dat")
 
 func TestBucketManager(t *testing.T) {
 	bm := New(5, 10*time.Minute)
@@ -24,19 +26,18 @@ func TestBucketManager(t *testing.T) {
 	}
 
 	WriteFile(t, bm)
-
 	ReadFile(t, bm)
 }
 
 func WriteFile(t *testing.T, bm *BucketManager) {
-	err := bm.SaveFile(path)
+	err := bm.SaveFile(filePath)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func ReadFile(t *testing.T, bm *BucketManager) {
-	loaded, err := LoadFile(path)
+	loaded, err := LoadFile(filePath)
 	if err != nil {
 		t.Error(err)
 	}

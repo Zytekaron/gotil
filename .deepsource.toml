@@ -7,4 +7,4 @@ name = "go"
 enabled = true
 
 [analyzers.meta]
-import_paths = ["github.com/Zytekaron/gotil"]
+import_paths = ["github.com/zytekaron/gotil"]
