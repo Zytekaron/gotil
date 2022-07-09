@@ -70,6 +70,21 @@ func (bm *SyncBucketManager) Reset(id string) {
 	bm.getOrCreate(id).Reset()
 }
 
+// Purge purges buckets that are no longer needed, as they have reset.
+func (bm *SyncBucketManager) Purge() {
+	bm.mutex.RLock()
+	for id, bucket := range bm.Buckets {
+		if bucket.RemainingTime() == 0 {
+			bm.mutex.RUnlock()
+			bm.mutex.Lock()
+			delete(bm.Buckets, id)
+			bm.mutex.Unlock()
+			bm.mutex.RLock()
+		}
+	}
+	bm.mutex.RUnlock()
+}
+
 // Add manually adds a SyncBucket to this SyncBucketManager.
 func (bm *SyncBucketManager) Add(id string, bucket *SyncBucket) {
 	bm.mutex.Lock()

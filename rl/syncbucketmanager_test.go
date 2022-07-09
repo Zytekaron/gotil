@@ -27,6 +27,8 @@ func TestSyncBucketManager(t *testing.T) {
 
 	WriteSyncFile(t, bm)
 	ReadSyncFile(t, bm)
+
+	bm.Purge() // should not block
 }
 
 func WriteSyncFile(t *testing.T, bm *SyncBucketManager) {

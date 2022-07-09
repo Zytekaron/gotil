@@ -27,6 +27,8 @@ func TestBucketManager(t *testing.T) {
 
 	WriteFile(t, bm)
 	ReadFile(t, bm)
+
+	bm.Purge() // should not block
 }
 
 func WriteFile(t *testing.T, bm *BucketManager) {

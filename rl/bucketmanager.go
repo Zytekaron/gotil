@@ -68,6 +68,15 @@ func (bm *BucketManager) Reset(id string) {
 	bm.getOrCreate(id).Reset()
 }
 
+// Purge purges buckets that are no longer needed, as they have reset.
+func (bm *BucketManager) Purge() {
+	for id, bucket := range bm.Buckets {
+		if bucket.RemainingTime() == 0 {
+			delete(bm.Buckets, id)
+		}
+	}
+}
+
 // Add manually adds a Bucket to this BucketManager.
 func (bm *BucketManager) Add(id string, bucket *Bucket) {
 	bm.Buckets[id] = bucket
